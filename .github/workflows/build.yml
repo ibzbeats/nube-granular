@@ -1,0 +1,42 @@
+ Este archivo le dice a GitHub que compile el plugin automaticamente (gratis).
+# Debe guardarse en el repositorio con la ruta:  .github/workflows/build.yml
+name: Compilar Nube Granular
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.nombre }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            nombre: Windows
+          - os: macos-latest
+            nombre: macOS
+    steps:
+      - name: Descargar el proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar la compilacion
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release --parallel
+
+      - name: Mostrar lo que se ha generado
+        shell: bash
+        continue-on-error: true
+        run: find build -maxdepth 6 -name "*.vst3"
+
+      - name: Guardar el plugin para descargarlo
+        uses: actions/upload-artifact@v4
+        with:
+          name: NubeGranular-${{ matrix.nombre }}
+          path: build/NubeGranular_artefacts/Release/VST3
+          if-no-files-found: error
