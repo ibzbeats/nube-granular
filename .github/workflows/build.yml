@@ -1,5 +1,3 @@
- Este archivo le dice a GitHub que compile el plugin automaticamente (gratis).
-# Debe guardarse en el repositorio con la ruta:  .github/workflows/build.yml
 name: Compilar Nube Granular
 
 on:
